@@ -26,7 +26,6 @@ class NotesController extends Controller
                 'username' => $username
             ]);
 
-
         return $this->render('Notes/notes.html.twig', array(
             'notes' => $notes
         ));
