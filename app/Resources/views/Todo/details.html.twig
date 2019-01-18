@@ -1,0 +1,17 @@
+{% extends 'default.html.twig' %}
+
+{% block body %}
+    <a class="btn btn-info" href="/todo">Wróc</a>
+    <hr>
+    <h2 class="page-header">{{ todo.name }}</h2>
+    <ul class="list-group">
+        <li class="list-group-item">Kategoria: {{ todo.category }}</li>
+        <li class="list-group-item">Priorytet: {{ todo.priority }}</li>
+        <li class="list-group-item">Data: <strong>{{ todo.date|date('F j, Y, g:i a') }}</strong></li>
+
+    </ul>
+{% endblock %}
+
+{% block stylesheets %}
+
+{% endblock %}
