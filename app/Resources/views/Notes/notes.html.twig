@@ -1,0 +1,33 @@
+{% extends 'default.html.twig' %}
+
+{% block body %}
+    <a href="/note/create" class="btn btn-primary">Dodaj Notatke</a>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Nazwa</th>
+            <th>Data</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for note in notes %}
+            <tr>
+                <td>{{ note.id }}</td>
+                <td>{{ note.name }}</td>
+                <td>{{ note. }}</td>
+                <td>
+                    <a href="/note/edit/{{ note.id }}" class="btn btn-info">Edytuj</a>
+                    <a href="/note/view/{{ note.id }}" class="btn btn-primary">Wyświetl</a>
+                    <a href="/note/delete/{{ note.id }}" class="btn btn-danger">Usuń</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block stylesheets %}
+
+{% endblock %}

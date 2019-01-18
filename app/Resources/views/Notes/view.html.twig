@@ -1,0 +1,14 @@
+{% extends 'default.html.twig' %}
+
+{% block body %}
+    <a class="btn btn-info" href="/note">Wróc</a>
+    <hr>
+    <h2 class="page-header">{{ note.name }}</h2>
+    <div class="container">
+        <p>{{ note.content }}</p>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+
+{% endblock %}

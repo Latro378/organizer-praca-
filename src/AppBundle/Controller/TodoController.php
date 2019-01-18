@@ -169,7 +169,7 @@ class TodoController extends Controller
         $todo = $this->getDoctrine()
             ->getRepository('AppBundle:Todo')
             ->find($id);
-        return $this->render('Todo/details.html.twig', array(
+        return $this->render('Todo/view.html.twig', array(
             'todo' =>$todo
         ));
     }

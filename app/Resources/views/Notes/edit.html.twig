@@ -1,0 +1,13 @@
+{% extends 'default.html.twig' %}
+
+{% block body %}
+    <h2 class="page-header">Edytuj Notatkę</h2>
+    {{ form_start(formNotes) }}
+    {{ form_widget(formNotes) }}
+    {{ form_end(formNotes) }}
+    <a class="btn btn-info" href="/note">Wróc</a>
+{% endblock %}
+
+{% block stylesheets %}
+
+{% endblock %}
