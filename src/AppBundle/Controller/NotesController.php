@@ -44,7 +44,7 @@ class NotesController extends Controller
         $formNotes = $this->createFormBuilder($note)
             ->add('name', TextType::class, array('label' => 'Nazwa notatki','attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('content', TextareaType::class, array('label' => 'Tekst', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('save', SubmitType::class, array('label' => 'Utwórz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
+            ->add('save', SubmitType::class, array('label' => 'Zapisz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
 
