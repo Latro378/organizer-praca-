@@ -27,10 +27,10 @@ class LoadDataListener
      * @param EntityManagerInterface $entityManager
      * @param Security $security
      */
-    public function __construct(EntityManagerInterface $entityManager,Security $security)
+    public function __construct(EntityManagerInterface $entityManager, Security $security)
     {
         $this->em = $entityManager;
-$this->security=$security;
+        $this->security = $security;
     }
 
     /**
@@ -43,10 +43,17 @@ $this->security=$security;
         $startDate = $calendarEvent->getStart();
         $endDate = $calendarEvent->getEnd();
         $filters = $calendarEvent->getFilters();
-        $user= $this->security->getUser();
-        $result = $this->em->getRepository(Todo::class)->findBy(['user'=>$user]);
+        $user = $this->security->getUser();
+        $result = $this->em->getRepository(Todo::class)->findBy(['user' => $user]);
         foreach ($result as $item) {
-            $calendarEvent->addEvent(new Event($item->getName(), $item->getDate()));
+            $event=new Event('a',$item->getDate());
+            $event->setTitle($item->getName($item->getName()));
+            $event->setStartDate($item->getDate());
+            $dateA =clone $item->getDate();
+            $event->setAllDay('false');
+            $event->setEndDate($dateA->modify('+1 hours'));
+            $calendarEvent->addEvent($event);
+
         }
     }
 }
