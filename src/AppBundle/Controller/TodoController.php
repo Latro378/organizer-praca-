@@ -8,6 +8,8 @@ use AppBundle\Entity\Todo;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -41,6 +43,8 @@ class TodoController extends Controller
         $formTodo = $this->createFormBuilder($todo)
             ->add('name', TextType::class, array('label' => 'Nazwa', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('category', TextType::class, array('label' => 'Kategoria', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('day', IntegerType::class, array('label' => 'co ile dni', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('dateEnd', DateTimeType::class, array('label' => 'do kiedy', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('date', DateTimeType::class, array('label' => 'Data', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
@@ -50,7 +54,6 @@ class TodoController extends Controller
         $formTodo->handleRequest($request);
 
         if ($formTodo->isSubmitted() && $formTodo->isValid()) {
-
             $username = $this->getUser();
             $now = new\DateTime('now');
             $todo->setUser($username);
@@ -58,12 +61,21 @@ class TodoController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($todo);
             $em->flush();
-
             $this->addFlash(
                 'notice',
                 'Dodano'
             );
-
+            $day = $formTodo->get('day')->getData();
+            $dateEnd = $formTodo->get('dateEnd')->getData();
+            if ($day > 1) {
+                $dateTemp = clone $todo->getDate();
+                while (($dateTemp->modify('+' . $day . 'days')) <= $dateEnd){
+                $newToDo = clone $todo;
+                $newToDo->setDate($dateTemp);
+                $em->persist($newToDo);
+                $em->flush();
+                }
+            }
             return $this->redirectToRoute('todo_list');
 
         }
