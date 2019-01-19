@@ -13,9 +13,9 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-       /* $imieUser = $this->getDoctrine()
-            ->getRepository('AppBundle:User')
-            ->find(imie);*/
+        /* $imieUser = $this->getDoctrine()
+             ->getRepository('AppBundle:User')
+             ->find(imie);*/
 
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig'/*,array(

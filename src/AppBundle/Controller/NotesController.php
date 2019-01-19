@@ -41,18 +41,18 @@ class NotesController extends Controller
         $note = new Notes();
 
         $formNotes = $this->createFormBuilder($note)
-            ->add('name', TextType::class, array('label' => 'Nazwa notatki','attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('name', TextType::class, array('label' => 'Nazwa notatki', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('content', TextareaType::class, array('label' => 'Tekst', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Zapisz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
 
-        $formNotes -> handleRequest($request);
+        $formNotes->handleRequest($request);
 
-        if( $formNotes -> isSubmitted() && $formNotes -> isValid()){
+        if ($formNotes->isSubmitted() && $formNotes->isValid()) {
 
-            $name = $formNotes['name'] -> getData();
-            $content = $formNotes['content'] -> getData();
+            $name = $formNotes['name']->getData();
+            $content = $formNotes['content']->getData();
 
             $username = $this->getUser()->getUsername();
             $now = new\DateTime('now');
@@ -74,7 +74,7 @@ class NotesController extends Controller
             return $this->redirectToRoute('note_list');
 
         }
-        return $this->render('Notes/create.html.twig',array(
+        return $this->render('Notes/create.html.twig', array(
             'formNotes' => $formNotes->createView()
         ));
     }
@@ -98,15 +98,15 @@ class NotesController extends Controller
         $note->setCreateDateNotes($now);
 
         $formNotes = $this->createFormBuilder($note)
-            ->add('name', TextType::class, array('label' => 'Nazwa notatki','attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('name', TextType::class, array('label' => 'Nazwa notatki', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('content', TextareaType::class, array('label' => 'Tekst', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
 
-        $formNotes -> handleRequest($request);
+        $formNotes->handleRequest($request);
 
-        if( $formNotes -> isSubmitted() && $formNotes -> isValid()) {
+        if ($formNotes->isSubmitted() && $formNotes->isValid()) {
 
             $name = $formNotes['name']->getData();
             $content = $formNotes['content']->getData();
@@ -134,8 +134,8 @@ class NotesController extends Controller
 
         }
         return $this->render('Notes/edit.html.twig', array(
-            'note' =>$note,
-            'formNotes' =>$formNotes->createView()
+            'note' => $note,
+            'formNotes' => $formNotes->createView()
         ));
     }
 
@@ -148,7 +148,7 @@ class NotesController extends Controller
             ->getRepository('AppBundle:Notes')
             ->find($id);
         return $this->render('Notes/view.html.twig', array(
-            'note' =>$note
+            'note' => $note
         ));
     }
 
