@@ -22,12 +22,9 @@ class TodoController extends Controller
      */
     public function listAction()
     {
-        $username = $this->getUser()->getUsername();
+        $user = $this->getUser();
         $todos = $this->getDoctrine()->getManager()
-            ->getRepository(Todo::class)->findBy([
-                'userId' => $username
-            ]);
-
+            ->getRepository(Todo::class)->findBy(['user' => $user]);
 
         return $this->render('Todo/todo.html.twig', array(
             'todos' => $todos
@@ -42,36 +39,22 @@ class TodoController extends Controller
         $todo = new Todo();
 
         $formTodo = $this->createFormBuilder($todo)
-            ->add('name', TextType::class, array('label' => 'Nazwa','attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('category', TextType::class, array('label' => 'Kategoria','attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('priority', ChoiceType::class, array('label' => 'Priorytet','choices' => array('Niska' => 'Niska','Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'),'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('name', TextType::class, array('label' => 'Nazwa', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('category', TextType::class, array('label' => 'Kategoria', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('date', DateTimeType::class, array('label'=>'Data', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('date', DateTimeType::class, array('label' => 'Data', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Utwórz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
+        $formTodo->handleRequest($request);
 
-        $formTodo -> handleRequest($request);
+        if ($formTodo->isSubmitted() && $formTodo->isValid()) {
 
-        if( $formTodo -> isSubmitted() && $formTodo -> isValid()){
-
-            $name = $formTodo['name'] -> getData();
-            $category = $formTodo['category'] -> getData();
-            $description = $formTodo['description'] -> getData();
-            $priority = $formTodo['priority'] -> getData();
-            $date = $formTodo['date'] -> getData();
-
-            $username = $this->getUser()->getUsername();
+            $username = $this->getUser();
             $now = new\DateTime('now');
-
-            $todo->setName($name);
-            $todo->setCategory($category);
-            $todo->setDescription($description);
-            $todo->setPriority($priority);
-            $todo->setDate($date);
-            $todo->setUserId($username);
+            $todo->setUser($username);
             $todo->setCreateDate($now);
-
             $em = $this->getDoctrine()->getManager();
             $em->persist($todo);
             $em->flush();
@@ -84,8 +67,8 @@ class TodoController extends Controller
             return $this->redirectToRoute('todo_list');
 
         }
-        return $this->render('Todo/create.html.twig',array(
-         'formTodo' => $formTodo->createView()
+        return $this->render('Todo/create.html.twig', array(
+            'formTodo' => $formTodo->createView()
         ));
     }
 
@@ -94,55 +77,22 @@ class TodoController extends Controller
      */
     public function editAction($id, Request $request)
     {
-
-        $todo = $this->getDoctrine()
-            ->getRepository('AppBundle:Todo')
+        $em = $this->getDoctrine()->getManager();
+        $todo = $em->getRepository('AppBundle:Todo')
             ->find($id);
 
-        $username = $this->getUser()->getUsername();
-        $now = new\DateTime('now');
-
-        $todo->setName($todo->getName());
-        $todo->setCategory($todo->getCategory());
-        $todo->setDescription($todo->getDescription());
-        $todo->setPriority($todo->getPriority());
-        $todo->setDate($todo->getDate());
-        $todo->setUserId($username);
-        $todo->setCreateDate($now);
-
         $formTodo = $this->createFormBuilder($todo)
-            ->add('name', TextType::class, array('label' => 'Nazwa','attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('category', TextType::class, array('label' => 'Kategoria','attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('priority', ChoiceType::class, array('label' => 'Priorytet','choices' => array('Niska' => 'Niska','Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'),'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('name', TextType::class, array('label' => 'Nazwa', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('category', TextType::class, array('label' => 'Kategoria', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('date', DateTimeType::class, array('label'=>'Data', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('date', DateTimeType::class, array('label' => 'Data', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
+        $formTodo->handleRequest($request);
 
-        $formTodo -> handleRequest($request);
-
-        if( $formTodo -> isSubmitted() && $formTodo -> isValid()) {
-
-            $name = $formTodo['name']->getData();
-            $category = $formTodo['category']->getData();
-            $description = $formTodo['description']->getData();
-            $priority = $formTodo['priority']->getData();
-            $date = $formTodo['date']->getData();
-
-            //$username = $this->getUser()->getUsername();
-            $now = new\DateTime('now');
-
-            $em = $this->getDoctrine()->getManager();
-            $todo = $em->getRepository('AppBundle:Todo')->find($id);
-
-            $todo->setName($name);
-            $todo->setCategory($category);
-            $todo->setDescription($description);
-            $todo->setPriority($priority);
-            $todo->setDate($date);
-            $todo->setUserId($username);
-            $todo->setCreateDate($now);
+        if ($formTodo->isSubmitted() && $formTodo->isValid()) {
 
 
             $em->flush();
@@ -156,8 +106,8 @@ class TodoController extends Controller
 
         }
         return $this->render('Todo/edit.html.twig', array(
-            'todo' =>$todo,
-            'formTodo' =>$formTodo->createView()
+            'todo' => $todo,
+            'formTodo' => $formTodo->createView()
         ));
     }
 
@@ -170,7 +120,7 @@ class TodoController extends Controller
             ->getRepository('AppBundle:Todo')
             ->find($id);
         return $this->render('Todo/view.html.twig', array(
-            'todo' =>$todo
+            'todo' => $todo
         ));
     }
 

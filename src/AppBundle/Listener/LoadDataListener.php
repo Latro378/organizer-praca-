@@ -8,6 +8,7 @@ use AncaRebeca\FullCalendarBundle\Model\FullCalendarEvent;
 use AppBundle\Entity\CalendarEvent as MyCustomEvent;
 use AppBundle\Entity\Todo;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Security;
 
 class LoadDataListener
 {
@@ -17,13 +18,19 @@ class LoadDataListener
     private $em;
 
     /**
+     * @var Security
+     */
+    private $security;
+
+    /**
      * LoadDataListener constructor.
      * @param EntityManagerInterface $entityManager
+     * @param Security $security
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager,Security $security)
     {
         $this->em = $entityManager;
-
+$this->security=$security;
     }
 
     /**
@@ -36,7 +43,8 @@ class LoadDataListener
         $startDate = $calendarEvent->getStart();
         $endDate = $calendarEvent->getEnd();
         $filters = $calendarEvent->getFilters();
-        $result = $this->em->getRepository(Todo::class)->findAll();
+        $user= $this->security->getUser();
+        $result = $this->em->getRepository(Todo::class)->findBy(['user'=>$user]);
         foreach ($result as $item) {
             $calendarEvent->addEvent(new Event($item->getName(), $item->getDate()));
         }

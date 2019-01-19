@@ -57,11 +57,10 @@ class Todo
     private $date;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="userId", type="string", unique=true)
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $userId;
+    private $user;
 
     /**
      * @var \DateTime
@@ -208,9 +207,9 @@ class Todo
      *
      * @return Todo
      */
-    public function setUserId($userId)
+    public function setUser($user)
     {
-        $this->userId = $userId;
+        $this->user = $user;
 
         return $this;
     }
@@ -220,9 +219,9 @@ class Todo
      *
      * @return string
      */
-    public function getUserId()
+    public function getUser()
     {
-        return $this->userId;
+        return $this->user;
     }
 
     /**
