@@ -43,11 +43,11 @@ class TodoController extends Controller
         $formTodo = $this->createFormBuilder($todo)
             ->add('name', TextType::class, array('label' => 'Nazwa', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('category', TextType::class, array('label' => 'Kategoria', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('day', IntegerType::class, array('label' => 'co ile dni', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('dateEnd', DateTimeType::class, array('label' => 'do kiedy', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('date', DateTimeType::class, array('label' => 'Data', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('date', DateTimeType::class, array('label' => 'Data rozpoczęcia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('dateEnd', DateTimeType::class, array('label' => 'Data zakonczenia', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('day', IntegerType::class, array('label' => 'Co ile dni', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Utwórz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
@@ -98,7 +98,8 @@ class TodoController extends Controller
             ->add('category', TextType::class, array('label' => 'Kategoria', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('date', DateTimeType::class, array('label' => 'Data', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('date', DateTimeType::class, array('label' => 'Data rozpoczęcia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('dateEnd', DateTimeType::class, array('label' => 'Data zakonczenia', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
