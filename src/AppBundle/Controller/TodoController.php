@@ -56,8 +56,9 @@ class TodoController extends Controller
         $dateEnd = $formTodo->get('dateEnd')->getData();
         $dateStart = $formTodo->get('date')->getData();
 
-        if($formTodo->isSubmitted() && $dateEnd > $dateStart){
-            if ($formTodo->isSubmitted() && $formTodo->isValid()) {
+
+        if ($formTodo->isSubmitted() && $formTodo->isValid()) {
+            if ( $dateEnd > $dateStart) {
                 $username = $this->getUser();
                 $now = new\DateTime('now');
                 $todo->setUser($username);
@@ -72,7 +73,7 @@ class TodoController extends Controller
 
                 if ($day > 1) {
                     $dateTemp = clone $todo->getDate();
-                    while (($dateTemp->modify('+' . $day . 'days')) <= $dateEnd){
+                    while (($dateTemp->modify('+' . $day . 'days')) <= $dateEnd) {
                         $newToDo = clone $todo;
                         $newToDo->setDate($dateTemp);
                         $em->persist($newToDo);
@@ -81,10 +82,12 @@ class TodoController extends Controller
                 }
                 return $this->redirectToRoute('todo_list');
 
-            }
-        }else{
-            $this->addFlash('danger', 'Zła data zakończenia');
 
+            } else {
+                $this->addFlash('danger', 'Zła data zakończenia');
+                return $this->redirectToRoute('todo_create');
+
+            }
         }
         return $this->render('Todo/create.html.twig', array(
             'formTodo' => $formTodo->createView()
