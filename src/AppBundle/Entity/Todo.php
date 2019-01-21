@@ -57,6 +57,13 @@ class Todo
     private $date;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="dateEnd", type="datetime")
+     */
+    private $dateEnd;
+
+    /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
@@ -199,6 +206,31 @@ class Todo
     {
         return $this->date;
     }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $dateEnd
+     *
+     * @return Todo
+     */
+    public function setDateEnd($dateEnd)
+    {
+        $this->dateEnd = $dateEnd;
+
+        return $this;
+    }
+
+    /**
+     * Get dateEnd
+     *
+     * @return \DateTime
+     */
+    public function getDateEnd()
+    {
+        return $this->dateEnd;
+    }
+
 
     /**
      * Set userId

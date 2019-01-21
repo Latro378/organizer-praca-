@@ -47,19 +47,20 @@ class TodoController extends Controller
             ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('date', DateTimeType::class, array('label' => 'Data rozpoczęcia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('dateEnd', DateTimeType::class, array('label' => 'Data zakonczenia', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('day', IntegerType::class, array('label' => 'Co ile dni', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('dateEnd', DateTimeType::class, array('label' => 'Data zakonczenia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('day', IntegerType::class, array('label' => 'Co ile dni(Jeżeli wydarzenie jest jednorazowe - wpisz 0)', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('dateFinal', DateTimeType::class, array('label' => 'Data do kiedy bedą odbywać się powtarzane wydarzeie', 'mapped' => false, 'required'=>false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Utwórz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
         $formTodo->handleRequest($request);
 
-        $dateEnd = $formTodo->get('dateEnd')->getData();
+        $dateFinal = $formTodo->get('dateFinal')->getData();
         $dateStart = $formTodo->get('date')->getData();
 
 
         if ($formTodo->isSubmitted() && $formTodo->isValid()) {
-            if ( $dateEnd > $dateStart) {
+            if ( $dateFinal > $dateStart) {
                 $username = $this->getUser();
                 $now = new\DateTime('now');
                 $todo->setUser($username);
@@ -74,12 +75,16 @@ class TodoController extends Controller
 
                 if ($day > 1) {
                     $dateTemp = clone $todo->getDate();
-                    while (($dateTemp->modify('+' . $day . 'days')) <= $dateEnd) {
+                    $dateTemp2 = clone $todo->getDateEnd();
+                    while (($dateTemp2->modify('+' . $day . 'days')) <= $dateFinal) {
+                        $dateTemp->modify('+' . $day . 'days');
                         $newToDo = clone $todo;
                         $newToDo->setDate($dateTemp);
+                        $newToDo->setDateEnd($dateTemp2);
                         $em->persist($newToDo);
                         $em->flush();
                     }
+
                 }
                 return $this->redirectToRoute('todo_list');
 

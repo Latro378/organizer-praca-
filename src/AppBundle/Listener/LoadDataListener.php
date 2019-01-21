@@ -49,9 +49,8 @@ class LoadDataListener
             $event=new Event('a',$item->getDate());
             $event->setTitle($item->getName($item->getName()));
             $event->setStartDate($item->getDate());
-            $dateA =clone $item->getDate();
             $event->setAllDay('false');
-            $event->setEndDate($dateA->modify('+1 hours'));
+            $event->setEndDate($item->getDateEnd());
             $calendarEvent->addEvent($event);
 
         }
