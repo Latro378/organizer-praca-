@@ -22,7 +22,9 @@ class UserType extends AbstractType{
             ->add('imie',TextType::class )
             ->add('nazwisko',TextType::class )
             ->add('password',RepeatedType::class, [
-                'type' => PasswordType::class
+                'type' => PasswordType::class,
+                'first_options'  => ['label' => 'Hasło '],
+                'second_options' => ['label' => 'Powtórz Hasło']
             ])
             ->add('submit', SubmitType::class, [
                 'attr' => [

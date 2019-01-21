@@ -1,14 +1,19 @@
 {% extends "base.html.twig" %}
 
 {% block title %}AppBundle:Register:register{% endblock %}
-
 {% block body %}
+
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="text-center"> Rejestracja</h3>
+        <h3 class="text-center">Rejestracja użytkownika</h3>
     </div>
-    <div class="panel-body">
-        {{ form(form) }}
+    <div class="left-block">
+        <a class="btn btn-dark " href="{{ path('login') }}">Wróc do logowania</a>
     </div>
+    <div class="panel-body d-flex justify-content-center">
+          {{ form(form) }}
+
+    </div>
+
 </div>
 {% endblock %}
