@@ -5,9 +5,10 @@
     <hr>
     <h2 class="page-header">{{ todo.name }}</h2>
     <ul class="list-group">
-        <li class="list-group-item">Kategoria: {{ todo.category }}</li>
-        <li class="list-group-item">Priorytet: {{ todo.priority }}</li>
-        <li class="list-group-item">Data: <strong>{{ todo.date|date('F j, Y, g:i a') }}</strong></li>
+        <li class="list-group-item"><strong>Kategoria:</strong> {{ todo.category }}</li>
+        <li class="list-group-item"><strong>Priorytet:</strong> {{ todo.priority }}</li>
+        <li class="list-group-item"><strong>Opis:</strong> <p>{{ todo.description }}</p></li>
+        <li class="list-group-item"><strong>Data:</strong> {{ todo.date|date('F j, Y, g:i a') }}</li>
 
     </ul>
 {% endblock %}

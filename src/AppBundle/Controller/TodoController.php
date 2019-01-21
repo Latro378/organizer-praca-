@@ -53,30 +53,37 @@ class TodoController extends Controller
 
         $formTodo->handleRequest($request);
 
-        if ($formTodo->isSubmitted() && $formTodo->isValid()) {
-            $username = $this->getUser();
-            $now = new\DateTime('now');
-            $todo->setUser($username);
-            $todo->setCreateDate($now);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($todo);
-            $em->flush();
-            $this->addFlash(
-                'notice',
-                'Dodano'
-            );
-            $day = $formTodo->get('day')->getData();
-            $dateEnd = $formTodo->get('dateEnd')->getData();
-            if ($day > 1) {
-                $dateTemp = clone $todo->getDate();
-                while (($dateTemp->modify('+' . $day . 'days')) <= $dateEnd){
-                $newToDo = clone $todo;
-                $newToDo->setDate($dateTemp);
-                $em->persist($newToDo);
+        $dateEnd = $formTodo->get('dateEnd')->getData();
+        $dateStart = $formTodo->get('date')->getData();
+
+        if($formTodo->isSubmitted() && $dateEnd > $dateStart){
+            if ($formTodo->isSubmitted() && $formTodo->isValid()) {
+                $username = $this->getUser();
+                $now = new\DateTime('now');
+                $todo->setUser($username);
+                $todo->setCreateDate($now);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($todo);
                 $em->flush();
+
+                $this->addFlash('success', 'Dodano wydarzenie');
+
+                $day = $formTodo->get('day')->getData();
+
+                if ($day > 1) {
+                    $dateTemp = clone $todo->getDate();
+                    while (($dateTemp->modify('+' . $day . 'days')) <= $dateEnd){
+                        $newToDo = clone $todo;
+                        $newToDo->setDate($dateTemp);
+                        $em->persist($newToDo);
+                        $em->flush();
+                    }
                 }
+                return $this->redirectToRoute('todo_list');
+
             }
-            return $this->redirectToRoute('todo_list');
+        }else{
+            $this->addFlash('danger', 'Zła data zakończenia');
 
         }
         return $this->render('Todo/create.html.twig', array(
@@ -146,10 +153,7 @@ class TodoController extends Controller
         $em->remove($todo);
         $em->flush();
 
-        $this->addFlash(
-            'notice',
-            'Usunięto'
-        );
+        $this->addFlash('danger', 'Usunięto wydarzenie');
 
         return $this->redirectToRoute('todo_list');
     }

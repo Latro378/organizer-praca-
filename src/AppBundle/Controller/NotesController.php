@@ -118,7 +118,7 @@ class NotesController extends Controller
             $note = $em->getRepository('AppBundle:Notes')->find($id);
 
             $note->setName($name);
-            $note->setDescription($content);
+            $note->setContent($content);
             $note->setUsername($username);
             $note->setCreateDateNotes($now);
 
