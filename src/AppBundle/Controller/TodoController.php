@@ -47,8 +47,8 @@ class TodoController extends Controller
             ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('day', DateType::class, array('label' => 'Data wydarzeia','mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('date', TimeType::class, array('label' => 'Godzina rozpoczecia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('dateEnd', TimeType::class, array('label' => 'Godzina zakonczenia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('date', TimeType::class, array('label' => 'Godzina rozpoczecia','mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('dateEnd', TimeType::class, array('label' => 'Godzina zakonczenia','mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('days', IntegerType::class, array('label' => 'Co ile dni(Jeżeli wydarzenie jest jednorazowe - wpisz 0)', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('dateFinal', DateTimeType::class, array('label' => 'Data do kiedy bedą odbywać się powtarzane wydarzeie', 'mapped' => false, 'required'=>false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Utwórz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
@@ -62,9 +62,12 @@ class TodoController extends Controller
         $hourStart = $formTodo->get('date')->getData();
         $hourEnd = $formTodo->get('dateEnd')->getData();
 
-        $dateStart = $day.' '.$hourStart;
-        $dateEnd = $day.' '.$hourEnd;
 
+        $dateStart = new\DateTime($day);
+        $dateEnd = new\DateTime($day);
+
+        $dateStart->modify('+'.$hourStart.'hours');
+        $dateEnd->modify('+'.$hourEnd.'hours');
 
         if ($formTodo->isSubmitted() && $formTodo->isValid()) {
             if ( $dateFinal > $dateStart) {
