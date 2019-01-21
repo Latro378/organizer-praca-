@@ -13,7 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,9 +46,10 @@ class TodoController extends Controller
             ->add('category', TextType::class, array('label' => 'Kategoria', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('date', DateTimeType::class, array('label' => 'Data rozpoczęcia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('dateEnd', DateTimeType::class, array('label' => 'Data zakonczenia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('day', IntegerType::class, array('label' => 'Co ile dni(Jeżeli wydarzenie jest jednorazowe - wpisz 0)', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('day', DateType::class, array('label' => 'Data wydarzeia','mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('date', TimeType::class, array('label' => 'Godzina rozpoczecia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('dateEnd', TimeType::class, array('label' => 'Godzina zakonczenia', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('days', IntegerType::class, array('label' => 'Co ile dni(Jeżeli wydarzenie jest jednorazowe - wpisz 0)', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('dateFinal', DateTimeType::class, array('label' => 'Data do kiedy bedą odbywać się powtarzane wydarzeie', 'mapped' => false, 'required'=>false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Utwórz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
@@ -56,7 +57,13 @@ class TodoController extends Controller
         $formTodo->handleRequest($request);
 
         $dateFinal = $formTodo->get('dateFinal')->getData();
-        $dateStart = $formTodo->get('date')->getData();
+
+        $day = $formTodo->get('day')->getData();
+        $hourStart = $formTodo->get('date')->getData();
+        $hourEnd = $formTodo->get('dateEnd')->getData();
+
+        $dateStart = $day.' '.$hourStart;
+        $dateEnd = $day.' '.$hourEnd;
 
 
         if ($formTodo->isSubmitted() && $formTodo->isValid()) {
@@ -65,19 +72,21 @@ class TodoController extends Controller
                 $now = new\DateTime('now');
                 $todo->setUser($username);
                 $todo->setCreateDate($now);
+                $todo->setDate($dateStart);
+                $todo->setDateEnd($dateEnd);
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($todo);
                 $em->flush();
 
                 $this->addFlash('success', 'Dodano wydarzenie');
 
-                $day = $formTodo->get('day')->getData();
+                $days = $formTodo->get('days')->getData();
 
-                if ($day > 1) {
+                if ($days > 1) {
                     $dateTemp = clone $todo->getDate();
                     $dateTemp2 = clone $todo->getDateEnd();
-                    while (($dateTemp2->modify('+' . $day . 'days')) <= $dateFinal) {
-                        $dateTemp->modify('+' . $day . 'days');
+                    while (($dateTemp2->modify('+' . $days . 'days')) <= $dateFinal) {
+                        $dateTemp->modify('+' . $days . 'days');
                         $newToDo = clone $todo;
                         $newToDo->setDate($dateTemp);
                         $newToDo->setDateEnd($dateTemp2);
