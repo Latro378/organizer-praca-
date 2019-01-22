@@ -72,9 +72,9 @@ class TodoController extends Controller
             if(($hourStart >$hourEnd) ){
                 $this->addFlash(
                     'danger',
-                    'zle'
+                    'Źle wprowadzono godziny'
                 );
-                return $this->redirectToRoute('todo_list');
+                return $this->redirectToRoute('todo_create');
             }
 
 
@@ -106,6 +106,13 @@ class TodoController extends Controller
                 }
 
             }
+
+            $this->addFlash(
+                'notice',
+                'Dodano'
+            );
+            return $this->redirectToRoute('todo_list');
+
 
 
         }
