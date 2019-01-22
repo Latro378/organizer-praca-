@@ -46,66 +46,55 @@ class TodoController extends Controller
             ->add('category', TextType::class, array('label' => 'Kategoria', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('priority', ChoiceType::class, array('label' => 'Priorytet', 'choices' => array('Niska' => 'Niska', 'Średnia' => 'Średnia', 'Wysoka' => 'Wysoka'), 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('description', TextareaType::class, array('label' => 'Opis', 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('day', DateType::class, array('label' => 'Data wydarzeia','mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('date', TimeType::class, array('label' => 'Godzina rozpoczecia','mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('dateEnd', TimeType::class, array('label' => 'Godzina zakonczenia','mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('day', DateType::class, array('label' => 'Data wydarzeia', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('hourStart', TimeType::class, array('label' => 'Godzina rozpoczecia', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('hourEnd', TimeType::class, array('label' => 'Godzina zakonczenia', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('days', IntegerType::class, array('label' => 'Co ile dni(Jeżeli wydarzenie jest jednorazowe - wpisz 0)', 'mapped' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
-            ->add('dateFinal', DateTimeType::class, array('label' => 'Data do kiedy bedą odbywać się powtarzane wydarzeie', 'mapped' => false, 'required'=>false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
+            ->add('dateFinal', DateTimeType::class, array('label' => 'Data do kiedy bedą odbywać się powtarzane wydarzeie', 'mapped' => false, 'required' => false, 'attr' => array('class' => 'form_control', 'style' => 'margin-bottom:15px')))
             ->add('save', SubmitType::class, array('label' => 'Utwórz', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px')))
             ->getForm();
 
         $formTodo->handleRequest($request);
 
-        $dateFinal = $formTodo->get('dateFinal')->getData();
-
-        $day = $formTodo->get('day')->getData();
-        $hourStart = $formTodo->get('date')->getData();
-        $hourEnd = $formTodo->get('dateEnd')->getData();
-
-
-        $dateStart = new\DateTime($day);
-        $dateEnd = new\DateTime($day);
-
-        $dateStart->modify('+'.$hourStart.'hours');
-        $dateEnd->modify('+'.$hourEnd.'hours');
 
         if ($formTodo->isSubmitted() && $formTodo->isValid()) {
-            if ( $dateFinal > $dateStart) {
-                $username = $this->getUser();
-                $now = new\DateTime('now');
-                $todo->setUser($username);
-                $todo->setCreateDate($now);
-                $todo->setDate($dateStart);
-                $todo->setDateEnd($dateEnd);
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($todo);
-                $em->flush();
+            $em = $this->getDoctrine()->getManager();
 
-                $this->addFlash('success', 'Dodano wydarzenie');
+            $dayStart = $formTodo->get('day')->getData();
+            $dateEnd = clone $dayStart;
+            $hourStart = $formTodo->get('hourStart')->getData();
+            $minuteStart = $formTodo->get('hourStart')->getData();
+            $hourEnd = $formTodo->get('hourEnd')->getData();
+            $minuteEnd = $formTodo->get('hourEnd')->getData();
+            $dayStart->modify('+' . $hourStart->format('h') . 'hours');
+            $dayStart->modify('+' . $minuteStart->format('i') . 'minutes');
+            $dateEnd->modify('+' . $hourEnd->format('h') . 'hours');
+            $dateEnd->modify('+' . $minuteEnd->format('i') . 'minutes');
+            $todo->setDate($dayStart);
+            $todo->setDateEnd($dateEnd);
+            $todo->setUser($this->getUser());
+            $todo->setCreateDate(new \DateTime('now'));
 
-                $days = $formTodo->get('days')->getData();
+            $em->persist($todo);
+            $em->flush();
 
-                if ($days > 1) {
-                    $dateTemp = clone $todo->getDate();
-                    $dateTemp2 = clone $todo->getDateEnd();
-                    while (($dateTemp2->modify('+' . $days . 'days')) <= $dateFinal) {
-                        $dateTemp->modify('+' . $days . 'days');
-                        $newToDo = clone $todo;
-                        $newToDo->setDate($dateTemp);
-                        $newToDo->setDateEnd($dateTemp2);
-                        $em->persist($newToDo);
-                        $em->flush();
-                    }
+            $days = $formTodo->get('days')->getData();
+            if ($days > 1) {
+                $dateTemp = clone $todo->getDate();
+                $dateTemp2 = clone $todo->getDateEnd();
+                while (($dateTemp2->modify('+' . $days . 'days')) <= $formTodo->get('dateFinal')->getData()) {
+                    $dateTemp->modify('+' . $days . 'days');
 
+                    $newToDo = clone $todo;
+                    $newToDo->setDate($dateTemp);
+                    $newToDo->setDateEnd($dateTemp2);
+                    $em->persist($newToDo);
+                    $em->flush();
                 }
-                return $this->redirectToRoute('todo_list');
-
-
-            } else {
-                $this->addFlash('danger', 'Zła data zakończenia');
-                return $this->redirectToRoute('todo_create');
 
             }
+
+
         }
         return $this->render('Todo/create.html.twig', array(
             'formTodo' => $formTodo->createView()
