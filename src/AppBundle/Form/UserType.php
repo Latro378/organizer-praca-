@@ -31,6 +31,7 @@ class UserType extends AbstractType{
                     'class' => 'btn btn-success pull-right'
                 ]
             ]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
