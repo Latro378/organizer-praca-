@@ -60,12 +60,25 @@ class TodoController extends Controller
         if ($formTodo->isSubmitted() && $formTodo->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
+
+
             $dayStart = $formTodo->get('day')->getData();
             $dateEnd = clone $dayStart;
             $hourStart = $formTodo->get('hourStart')->getData();
             $minuteStart = $formTodo->get('hourStart')->getData();
             $hourEnd = $formTodo->get('hourEnd')->getData();
             $minuteEnd = $formTodo->get('hourEnd')->getData();
+
+            if(($hourStart >$hourEnd) ){
+                $this->addFlash(
+                    'danger',
+                    'zle'
+                );
+                return $this->redirectToRoute('todo_list');
+            }
+
+
+
             $dayStart->modify('+' . $hourStart->format('h') . 'hours');
             $dayStart->modify('+' . $minuteStart->format('i') . 'minutes');
             $dateEnd->modify('+' . $hourEnd->format('h') . 'hours');
